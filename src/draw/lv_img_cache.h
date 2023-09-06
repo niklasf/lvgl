@@ -23,15 +23,43 @@ extern "C" {
  *      TYPEDEFS
  **********************/
 
-/**
- * When loading images from the network it can take a long time to download and decode the image.
- *
- * To avoid repeating this heavy load images can be cached.
- */
 typedef struct {
-    lv_img_decoder_dsc_t dec_dsc; /**< Image information*/
-    void * user_data; /**< Image cache entry user data*/
+    /**The image source or other source related to the cache content.*/
+    const void * src;
+
+    /** Some extra parameters to describe the source. E.g. the current frame of an animation*/
+    uint32_t param1;
+    uint32_t param2;
+
+    /** The data to cache*/
+    const void * data;
+
+    /** Size of data in bytes*/
+    uint32_t data_size;
+
+    /** On access to any cache entry, `life` of each cache entry will be incremented by their own `weight` to keep the entry alive longer*/
+    uint32_t weight;
+
+    /** The current `life`. Entries with the smallest life will be purged from the cache if a new entry needs to be cached*/
+    int32_t life;
+
+    /** `src` is a string, so compare it with `lv_strcmp()` */
+    uint32_t str_src   : 1;
+
+    /** Call `lv_free` on `src` when the entry is removed from the cache */
+    uint32_t free_src   : 1;
+
+    /** Call `lv_draw_buf_free` on `data` when the entry is removed from the cache */
+    uint32_t free_data   : 1;
+
+    /**Any user data if needed*/
+    void * user_data;
 } _lv_img_cache_entry_t;
+
+
+
+
+
 
 typedef struct {
     _lv_img_cache_entry_t * (*open_cb)(const void * src, lv_color_t color, int32_t frame_id);
@@ -47,7 +75,7 @@ typedef struct {
  * Initialize the img cache manager
  * @param manager Pointer to the img cache manager
  */
-void lv_img_cache_manager_init(lv_img_cache_manager_t * manager);
+void lv_cache_manager_init(void);
 
 /**
  * Apply the img cache manager
@@ -55,31 +83,15 @@ void lv_img_cache_manager_init(lv_img_cache_manager_t * manager);
  */
 void lv_img_cache_manager_apply(const lv_img_cache_manager_t * manager);
 
-/**
- * Open an image using the image decoder interface and cache it.
- * The image will be left open meaning if the image decoder open callback allocated memory then it will remain.
- * The image is closed if a new image is opened and the new image takes its place in the cache.
- * @param src source of the image. Path to file or pointer to an `lv_img_dsc_t` variable
- * @param color The color of the image with `LV_IMG_CF_ALPHA_...`
- * @param frame_id the index of the frame. Used only with animated images, set 0 for normal images
- * @return pointer to the cache entry or NULL if can open the image
- */
-_lv_img_cache_entry_t * _lv_img_cache_open(const void * src, lv_color_t color, int32_t frame_id);
+_lv_img_cache_entry_t * _lv_cache_add(size_t size);
 
-/**
- * Set the number of images to be cached.
- * More cached images mean more opened image at same time which might mean more memory usage.
- * E.g. if 20 PNG or JPG images are open in the RAM they consume memory while opened in the cache.
- * @param new_entry_cnt number of image to cache
- */
-void lv_img_cache_set_size(uint16_t new_entry_cnt);
+_lv_img_cache_entry_t * _lv_cache_find_ptr(const void * src_ptr, uint32_t param1, uint32_t param2);
 
-/**
- * Invalidate an image source in the cache.
- * Useful if the image source is updated therefore it needs to be cached again.
- * @param src an image source path to a file or pointer to an `lv_img_dsc_t` variable.
- */
-void lv_img_cache_invalidate_src(const void * src);
+_lv_img_cache_entry_t * _lv_cache_find_str(const char * src_str, uint32_t param1, uint32_t param2);
+
+const void * _lv_cache_get_data(_lv_img_cache_entry_t * entry);
+
+void lv_cache_invalidate(_lv_img_cache_entry_t * entry);
 
 /**********************
  *      MACROS

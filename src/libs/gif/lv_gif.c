@@ -61,7 +61,7 @@ void lv_gif_set_src(lv_obj_t * obj, const void * src)
 
     /*Close previous gif if any*/
     if(gifobj->gif) {
-        lv_img_cache_invalidate_src(&gifobj->imgdsc);
+        lv_cache_invalidate(_lv_cache_find_ptr(lv_img_get_src(obj), 0, 0));
         gd_close_gif(gifobj->gif);
         gifobj->gif = NULL;
         gifobj->imgdsc.data = NULL;
@@ -122,7 +122,7 @@ static void lv_gif_destructor(const lv_obj_class_t * class_p, lv_obj_t * obj)
 {
     LV_UNUSED(class_p);
     lv_gif_t * gifobj = (lv_gif_t *) obj;
-    lv_img_cache_invalidate_src(&gifobj->imgdsc);
+    lv_cache_invalidate(_lv_cache_find_ptr(lv_img_get_src(obj), 0, 0));
     if(gifobj->gif)
         gd_close_gif(gifobj->gif);
     lv_timer_del(gifobj->timer);
@@ -147,7 +147,7 @@ static void next_frame_task_cb(lv_timer_t * t)
 
     gd_render_frame(gifobj->gif, (uint8_t *)gifobj->imgdsc.data);
 
-    lv_img_cache_invalidate_src(lv_img_get_src(obj));
+    lv_cache_invalidate(_lv_cache_find_ptr(lv_img_get_src(obj), 0, 0));
     lv_obj_invalidate(obj);
 }
 
