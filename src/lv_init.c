@@ -147,7 +147,7 @@ void lv_init(void)
 
     _lv_img_decoder_init();
 
-    lv_cache_manager_init();
+    lv_cache_init();
 
     /*Test if the IDE has UTF-8 encoding*/
     const char * txt = "Á";

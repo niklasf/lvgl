@@ -54,7 +54,7 @@ typedef struct {
 
     /**Any user data if needed*/
     void * user_data;
-} _lv_img_cache_entry_t;
+} lv_cache_entry_t;
 
 
 
@@ -62,7 +62,7 @@ typedef struct {
 
 
 typedef struct {
-    _lv_img_cache_entry_t * (*open_cb)(const void * src, lv_color_t color, int32_t frame_id);
+    lv_cache_entry_t * (*open_cb)(const void * src, lv_color_t color, int32_t frame_id);
     void (*set_size_cb)(uint16_t new_entry_cnt);
     void (*invalidate_src_cb)(const void * src);
 } lv_img_cache_manager_t;
@@ -75,7 +75,7 @@ typedef struct {
  * Initialize the img cache manager
  * @param manager Pointer to the img cache manager
  */
-void lv_cache_manager_init(void);
+void lv_cache_init(void);
 
 /**
  * Apply the img cache manager
@@ -83,15 +83,15 @@ void lv_cache_manager_init(void);
  */
 void lv_img_cache_manager_apply(const lv_img_cache_manager_t * manager);
 
-_lv_img_cache_entry_t * _lv_cache_add(size_t size);
+lv_cache_entry_t * lv_cache_add(size_t size);
 
-_lv_img_cache_entry_t * _lv_cache_find_ptr(const void * src_ptr, uint32_t param1, uint32_t param2);
+lv_cache_entry_t * lv_cache_find_ptr(const void * src_ptr, uint32_t param1, uint32_t param2);
 
-_lv_img_cache_entry_t * _lv_cache_find_str(const char * src_str, uint32_t param1, uint32_t param2);
+lv_cache_entry_t * lv_cache_find_str(const char * src_str, uint32_t param1, uint32_t param2);
 
-const void * _lv_cache_get_data(_lv_img_cache_entry_t * entry);
+const void * lv_cache_get_data(lv_cache_entry_t * entry);
 
-void lv_cache_invalidate(_lv_img_cache_entry_t * entry);
+void lv_cache_invalidate(lv_cache_entry_t * entry);
 
 /**********************
  *      MACROS

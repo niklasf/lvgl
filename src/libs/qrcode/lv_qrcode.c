@@ -224,7 +224,7 @@ static void lv_qrcode_destructor(const lv_obj_class_t * class_p, lv_obj_t * obj)
     LV_UNUSED(class_p);
 
     lv_img_dsc_t * img_dsc = lv_canvas_get_img(obj);
-    lv_img_cache_invalidate_src(img_dsc);
+    lv_cache_invalidate(lv_cache_find_ptr(img_dsc, 0, 0));
 
     if(!img_dsc->data) {
         return;

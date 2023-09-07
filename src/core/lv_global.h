@@ -104,9 +104,9 @@ typedef struct _lv_global_t {
     lv_img_cache_manager_t img_cache_mgr;
 #if LV_IMG_CACHE_DEF_SIZE
     uint16_t img_cache_entry_cnt;
-    _lv_img_cache_entry_t * img_cache_array;
+    lv_cache_entry_t * img_cache_array;
 #else
-    _lv_img_cache_entry_t img_cache_single;
+    lv_cache_entry_t img_cache_single;
 #endif
 
     lv_draw_global_info_t draw_info;
