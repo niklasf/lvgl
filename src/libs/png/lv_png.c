@@ -152,10 +152,10 @@ static lv_res_t decoder_open(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * 
         const char * fn = dsc->src;
         if(strcmp(lv_fs_get_ext(fn), "png") == 0) {              /*Check the extension*/
             unsigned error;
-            error = lodepng_load_file((void*)&png_data, &png_data_size, fn);   /*Load the file*/
+            error = lodepng_load_file((void *)&png_data, &png_data_size, fn);  /*Load the file*/
             if(error) {
                 if(png_data != NULL) {
-                    lv_free((void*)png_data);
+                    lv_free((void *)png_data);
                 }
                 LV_LOG_WARN("error %" LV_PRIu32 ": %s\n", error, lodepng_error_text(error));
                 return LV_RES_INV;
@@ -182,7 +182,8 @@ static lv_res_t decoder_open(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * 
         cache->src = lv_strdup(dsc->src);
         cache->str_src = 1;
         cache->free_src = 1;
-    } else {
+    }
+    else {
         cache->src = dsc->src;
     }
 
