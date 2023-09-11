@@ -49,8 +49,8 @@ void lv_example_meter_3(void)
     LV_IMAGE_DECLARE(img_hand)
 
     /*Add a the hands from images*/
-    lv_meter_indicator_t * indic_min = lv_meter_add_needle_img(meter, &img_hand, 5, 5);
-    lv_meter_indicator_t * indic_hour = lv_meter_add_needle_img(meter, &img_hand, 5, 5);
+    lv_meter_indicator_t * indic_min = lv_meter_add_needle_image(meter, &img_hand, 5, 5);
+    lv_meter_indicator_t * indic_hour = lv_meter_add_needle_image(meter, &img_hand, 5, 5);
 
     lv_obj_add_event(meter, tick_label_event, LV_EVENT_DRAW_PART_BEGIN, NULL);
 

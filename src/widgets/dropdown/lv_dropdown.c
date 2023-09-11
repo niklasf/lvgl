@@ -853,7 +853,7 @@ static void draw_main(lv_event_t * e)
             img_dsc.pivot.y = symbol_h / 2;
             img_dsc.angle = lv_obj_get_style_transform_angle(obj, LV_PART_INDICATOR);
             img_dsc.src = dropdown->symbol;
-            lv_draw_img(layer, &img_dsc, &symbol_area);
+            lv_draw_image(layer, &img_dsc, &symbol_area);
         }
     }
 

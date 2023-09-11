@@ -40,7 +40,7 @@
  *   GLOBAL FUNCTIONS
  **********************/
 
-void lv_draw_sw_bg_img(lv_draw_unit_t * draw_unit, const lv_draw_bg_image_dsc_t * dsc, const lv_area_t * coords)
+void lv_draw_sw_bg_image(lv_draw_unit_t * draw_unit, const lv_draw_bg_image_dsc_t * dsc, const lv_area_t * coords)
 {
     if(dsc->src == NULL) return;
     if(dsc->opa <= LV_OPA_MIN) return;
@@ -87,7 +87,7 @@ void lv_draw_sw_bg_img(lv_draw_unit_t * draw_unit, const lv_draw_bg_image_dsc_t 
             area.x2 = area.x1 + dsc->img_header.w - 1;
             area.y2 = area.y1 + dsc->img_header.h - 1;
 
-            lv_draw_sw_img(draw_unit, &img_dsc, &area);
+            lv_draw_sw_image(draw_unit, &img_dsc, &area);
         }
         else {
             lv_area_t area;
@@ -99,7 +99,7 @@ void lv_draw_sw_bg_img(lv_draw_unit_t * draw_unit, const lv_draw_bg_image_dsc_t 
                 area.x1 = coords->x1;
                 area.x2 = area.x1 + dsc->img_header.w - 1;
                 for(; area.x1 <= coords->x2; area.x1 += dsc->img_header.w, area.x2 += dsc->img_header.w) {
-                    lv_draw_sw_img(draw_unit, &img_dsc, &area);
+                    lv_draw_sw_image(draw_unit, &img_dsc, &area);
                 }
             }
         }

@@ -28,7 +28,7 @@
 static void lv_imgbtn_constructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
 static void draw_main(lv_event_t * e);
 static void lv_imgbtn_event(const lv_obj_class_t * class_p, lv_event_t * e);
-static void refr_img(lv_obj_t * imgbtn);
+static void refr_image(lv_obj_t * imgbtn);
 static lv_imgbtn_state_t suggest_state(lv_obj_t * imgbtn, lv_imgbtn_state_t state);
 static lv_imgbtn_state_t get_state(const lv_obj_t * imgbtn);
 static void update_src_info(lv_imgbtn_src_info_t * info, const void * src);
@@ -90,7 +90,7 @@ void lv_imgbtn_set_src(lv_obj_t * obj, lv_imgbtn_state_t state, const void * src
     update_src_info(&imgbtn->src_mid[state], src_mid);
     update_src_info(&imgbtn->src_right[state], src_right);
 
-    refr_img(obj);
+    refr_image(obj);
 }
 
 void lv_imgbtn_set_state(lv_obj_t * obj, lv_imgbtn_state_t state)
@@ -108,7 +108,7 @@ void lv_imgbtn_set_state(lv_obj_t * obj, lv_imgbtn_state_t state)
     lv_obj_clear_state(obj, LV_STATE_CHECKED | LV_STATE_PRESSED | LV_STATE_DISABLED);
     lv_obj_add_state(obj, obj_state);
 
-    refr_img(obj);
+    refr_image(obj);
 }
 
 /*=====================
@@ -186,7 +186,7 @@ static void lv_imgbtn_event(const lv_obj_class_t * class_p, lv_event_t * e)
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t * obj = lv_event_get_target(e);
     if(code == LV_EVENT_PRESSED || code == LV_EVENT_RELEASED || code == LV_EVENT_PRESS_LOST) {
-        refr_img(obj);
+        refr_image(obj);
     }
     else if(code == LV_EVENT_DRAW_MAIN) {
         draw_main(e);
@@ -240,7 +240,7 @@ static void draw_main(lv_event_t * e)
         coords_part.x2 = coords.x1 + src_info->header.w - 1;
         coords_part.y2 = coords.y1 + src_info->header.h - 1;
         img_dsc.src = src_info->img_src;
-        lv_draw_img(layer, &img_dsc, &coords_part);
+        lv_draw_image(layer, &img_dsc, &coords_part);
     }
 
     src_info = &imgbtn->src_right[state];
@@ -251,7 +251,7 @@ static void draw_main(lv_event_t * e)
         coords_part.x2 = coords.x2;
         coords_part.y2 = coords.y1 + src_info->header.h - 1;
         img_dsc.src = src_info->img_src;
-        lv_draw_img(layer, &img_dsc, &coords_part);
+        lv_draw_image(layer, &img_dsc, &coords_part);
     }
 
     src_info = &imgbtn->src_mid[state];
@@ -277,7 +277,7 @@ static void draw_main(lv_event_t * e)
 
             for(i = coords_part.x1; i < (lv_coord_t)(clip_area_center.x2 + src_info->header.w - 1); i += src_info->header.w) {
                 img_dsc.src = src_info->img_src;
-                lv_draw_img(layer, &img_dsc, &coords_part);
+                lv_draw_image(layer, &img_dsc, &coords_part);
                 coords_part.x1 = coords_part.x2 + 1;
                 coords_part.x2 += src_info->header.w;
             }
@@ -286,7 +286,7 @@ static void draw_main(lv_event_t * e)
     }
 }
 
-static void refr_img(lv_obj_t * obj)
+static void refr_image(lv_obj_t * obj)
 {
     lv_imgbtn_t * imgbtn = (lv_imgbtn_t *)obj;
     lv_imgbtn_state_t state  = suggest_state(obj, get_state(obj));

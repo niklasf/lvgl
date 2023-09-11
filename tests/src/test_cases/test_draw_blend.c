@@ -105,14 +105,14 @@ void canvas_blend_test(lv_obj_t  * canvas_large, lv_draw_image_dsc_t * img_dsc, 
 
     img_dsc->opa = LV_OPA_COVER;
     lv_canvas_init_layer(canvas_large, &layer);
-    lv_draw_img(&layer, img_dsc, &area);
+    lv_draw_image(&layer, img_dsc, &area);
     lv_canvas_finish_layer(canvas_large, &layer);
 
     lv_area_move(&area, 190, 0);
 
     img_dsc->opa = LV_OPA_50;
     lv_canvas_init_layer(canvas_large, &layer);
-    lv_draw_img(&layer, img_dsc, &area);
+    lv_draw_image(&layer, img_dsc, &area);
     lv_canvas_finish_layer(canvas_large, &layer);
 }
 

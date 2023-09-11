@@ -70,7 +70,7 @@ void lv_example_canvas_1(void)
     img_dsc.pivot.y = CANVAS_HEIGHT / 2;
 
     lv_area_t coords_img = {0, 0, CANVAS_WIDTH - 1, CANVAS_HEIGHT - 1};
-    lv_draw_img(&layer, &img_dsc, &coords_img);
+    lv_draw_image(&layer, &img_dsc, &coords_img);
 
     lv_canvas_finish_layer(canvas, &layer);
 }

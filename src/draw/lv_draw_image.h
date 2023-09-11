@@ -74,7 +74,7 @@ void lv_draw_image_dsc_init(lv_draw_image_dsc_t * dsc);
  * @param coords        the coordinates of the image
  * @param src           pointer to a lv_color_t array which contains the pixels of the image
  */
-void lv_draw_img(struct _lv_layer_t * layer, const lv_draw_image_dsc_t * dsc, const lv_area_t * coords);
+void lv_draw_image(struct _lv_layer_t * layer, const lv_draw_image_dsc_t * dsc, const lv_area_t * coords);
 
 
 void lv_draw_layer(struct _lv_layer_t * layer, const lv_draw_image_dsc_t * dsc, const lv_area_t * coords);

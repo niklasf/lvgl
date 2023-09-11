@@ -90,7 +90,7 @@ lv_color32_t lv_canvas_get_px(lv_obj_t * obj, lv_coord_t x, lv_coord_t y);
  * @param canvas pointer to a canvas object
  * @return pointer to the image descriptor.
  */
-lv_image_dsc_t * lv_canvas_get_img(lv_obj_t * canvas);
+lv_image_dsc_t * lv_canvas_get_image(lv_obj_t * canvas);
 
 /*=====================
  * Other functions

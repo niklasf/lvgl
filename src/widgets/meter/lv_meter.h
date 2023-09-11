@@ -167,8 +167,8 @@ lv_meter_indicator_t * lv_meter_add_needle_line(lv_obj_t * obj, uint16_t width,
  * @return              the new indicator or NULL on allocation failure.
  * @note                the needle image should point to the right, like -O----->
  */
-lv_meter_indicator_t * lv_meter_add_needle_img(lv_obj_t * obj, const void * src,
-                                               lv_coord_t pivot_x, lv_coord_t pivot_y);
+lv_meter_indicator_t * lv_meter_add_needle_image(lv_obj_t * obj, const void * src,
+                                                 lv_coord_t pivot_x, lv_coord_t pivot_y);
 
 /**
  * Add an arc indicator the scale

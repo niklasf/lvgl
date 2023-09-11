@@ -26,7 +26,7 @@
 static void lv_image_constructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
 static void lv_image_destructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
 static void lv_image_event(const lv_obj_class_t * class_p, lv_event_t * e);
-static void draw_img(lv_event_t * e);
+static void draw_image(lv_event_t * e);
 
 /**********************
  *  STATIC VARIABLES
@@ -535,11 +535,11 @@ static void lv_image_event(const lv_obj_class_t * class_p, lv_event_t * e)
         }
     }
     else if(code == LV_EVENT_DRAW_MAIN || code == LV_EVENT_DRAW_POST || code == LV_EVENT_COVER_CHECK) {
-        draw_img(e);
+        draw_image(e);
     }
 }
 
-static void draw_img(lv_event_t * e)
+static void draw_image(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t * obj = lv_event_get_target(e);
@@ -697,7 +697,7 @@ static void draw_img(lv_event_t * e)
                     coords_tmp.x2 = coords_tmp.x1 + img->w - 1;
 
                     for(; coords_tmp.x1 < img_max_area.x2; coords_tmp.x1 += img_size_final.x, coords_tmp.x2 += img_size_final.x) {
-                        lv_draw_img(layer, &img_dsc, &coords_tmp);
+                        lv_draw_image(layer, &img_dsc, &coords_tmp);
                     }
                 }
                 layer->clip_area = clip_area_ori;

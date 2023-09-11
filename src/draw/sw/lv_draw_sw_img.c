@@ -66,7 +66,7 @@ void lv_draw_sw_layer(lv_draw_unit_t * draw_unit, const lv_draw_image_dsc_t * dr
     lv_memcpy(&new_draw_dsc, draw_dsc, sizeof(lv_draw_image_dsc_t));
     new_draw_dsc.src = &img_dsc;
 
-    lv_draw_sw_img(draw_unit, &new_draw_dsc, coords);
+    lv_draw_sw_image(draw_unit, &new_draw_dsc, coords);
 
 #if LV_USE_LAYER_DEBUG || LV_USE_PARALLEL_DRAW_DEBUG
     lv_area_t area_rot;
@@ -145,8 +145,8 @@ void lv_draw_sw_layer(lv_draw_unit_t * draw_unit, const lv_draw_image_dsc_t * dr
 
 
 
-LV_ATTRIBUTE_FAST_MEM void lv_draw_sw_img(lv_draw_unit_t * draw_unit, const lv_draw_image_dsc_t * draw_dsc,
-                                          const lv_area_t * coords)
+LV_ATTRIBUTE_FAST_MEM void lv_draw_sw_image(lv_draw_unit_t * draw_unit, const lv_draw_image_dsc_t * draw_dsc,
+                                            const lv_area_t * coords)
 {
     lv_area_t transformed_area;
     lv_area_copy(&transformed_area, coords);

@@ -65,7 +65,7 @@ void lv_draw_layer(lv_layer_t * layer, const lv_draw_image_dsc_t * dsc, const lv
 }
 
 
-void lv_draw_img(lv_layer_t * layer, const lv_draw_image_dsc_t * dsc, const lv_area_t * coords)
+void lv_draw_image(lv_layer_t * layer, const lv_draw_image_dsc_t * dsc, const lv_area_t * coords)
 {
     if(dsc->src == NULL) {
         LV_LOG_WARN("Image draw: src is NULL");

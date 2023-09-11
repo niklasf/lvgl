@@ -195,7 +195,7 @@ lv_color32_t lv_canvas_get_px(lv_obj_t * obj, lv_coord_t x, lv_coord_t y)
     return ret;
 }
 
-lv_image_dsc_t * lv_canvas_get_img(lv_obj_t * obj)
+lv_image_dsc_t * lv_canvas_get_image(lv_obj_t * obj)
 {
     LV_ASSERT_OBJ(obj, MY_CLASS);
 
@@ -234,7 +234,7 @@ void lv_canvas_fill_bg(lv_obj_t * obj, lv_color_t color, lv_opa_t opa)
 {
     LV_ASSERT_OBJ(obj, MY_CLASS);
 
-    lv_image_dsc_t * dsc = lv_canvas_get_img(obj);
+    lv_image_dsc_t * dsc = lv_canvas_get_image(obj);
 
     uint32_t x;
     uint32_t y;
@@ -289,7 +289,7 @@ void lv_canvas_init_layer(lv_obj_t * canvas, lv_layer_t * layer)
     LV_ASSERT_NULL(canvas);
     LV_ASSERT_NULL(layer);
 
-    lv_image_dsc_t * dsc = lv_canvas_get_img(canvas);
+    lv_image_dsc_t * dsc = lv_canvas_get_image(canvas);
     lv_area_t canvas_area = {0, 0, dsc->header.w - 1,  dsc->header.h - 1};
     lv_memzero(layer, sizeof(*layer));
 

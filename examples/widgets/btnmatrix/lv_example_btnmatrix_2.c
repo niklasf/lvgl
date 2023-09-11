@@ -64,7 +64,7 @@ static void event_cb(lv_event_t * e)
                 img_draw_dsc.recolor = lv_color_black();
                 if(pressed) img_draw_dsc.recolor_opa = LV_OPA_30;
 
-                lv_draw_img(base_dsc->layer, &img_draw_dsc, &a);
+                lv_draw_image(base_dsc->layer, &img_draw_dsc, &a);
 
             }
         }
