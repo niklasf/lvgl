@@ -60,11 +60,11 @@ void view_ctrl_pad_create(lv_obj_t * par, view_t * ui)
     lv_obj_set_style_radius(tv, 0, 0);
     lv_obj_set_style_bg_color(tv, lv_color_hex(0xffffff), 0);
 
-    lv_obj_t * btns = lv_tabview_get_tab_btns(tv);
-    lv_obj_set_style_outline_width(btns, 0,  LV_PART_ITEMS | LV_STATE_FOCUS_KEY);
-    lv_obj_set_style_outline_width(btns, 0,   LV_STATE_FOCUS_KEY);
-    lv_obj_set_style_bg_color(btns, lv_color_white(), LV_PART_ITEMS | LV_STATE_CHECKED);
-    lv_obj_set_height(btns, 40);
+    lv_obj_t * buttons = lv_tabview_get_tab_buttons(tv);
+    lv_obj_set_style_outline_width(buttons, 0,  LV_PART_ITEMS | LV_STATE_FOCUS_KEY);
+    lv_obj_set_style_outline_width(buttons, 0,   LV_STATE_FOCUS_KEY);
+    lv_obj_set_style_bg_color(buttons, lv_color_white(), LV_PART_ITEMS | LV_STATE_CHECKED);
+    lv_obj_set_height(buttons, 40);
 
     ui->ctrl_pad.tab.view = tv;
 
