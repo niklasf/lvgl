@@ -26,6 +26,7 @@
  **********************/
 static lv_res_t decoder_info(struct _lv_img_decoder_t * decoder, const void * src, lv_img_header_t * header);
 static lv_res_t decoder_open(lv_img_decoder_t * dec, lv_img_decoder_dsc_t * dsc);
+static void decoder_close(lv_img_decoder_t * dec, lv_img_decoder_dsc_t * dsc);
 static void convert_color_depth(uint8_t * img_p, uint32_t px_cnt);
 static const void * decode_png_data(const void * png_data, size_t png_data_size);
 static lv_res_t try_cache(lv_img_decoder_dsc_t * dsc);
@@ -50,6 +51,7 @@ void lv_png_init(void)
     lv_img_decoder_t * dec = lv_img_decoder_create();
     lv_img_decoder_set_info_cb(dec, decoder_info);
     lv_img_decoder_set_open_cb(dec, decoder_open);
+    lv_img_decoder_set_close_cb(dec, decoder_close);
 }
 
 /**********************
@@ -171,11 +173,13 @@ static lv_res_t decoder_open(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * 
         return LV_RES_INV;
     }
 
+
+    lv_cache_entry_t * cache = lv_cache_add(dsc->header.w * dsc->header.h * 4);
+    if(cache == NULL) return LV_RES_INV;
+
     uint32_t t = lv_tick_get();
     const void * decoded_img = decode_png_data(png_data, png_data_size);
     t = lv_tick_elaps(t);
-
-    lv_cache_entry_t * cache = lv_cache_add(dsc->header.w * dsc->header.h * 4);
     cache->weight = t;
     cache->data = decoded_img;
     if(dsc->src_type == LV_IMG_SRC_FILE) {
@@ -192,6 +196,16 @@ static lv_res_t decoder_open(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * 
     return LV_RES_OK;    /*If not returned earlier then it failed*/
 }
 
+static void decoder_close(lv_img_decoder_t * dec, lv_img_decoder_dsc_t * dsc)
+{
+    LV_UNUSED(dec);
+
+    lv_cache_entry_t * cache = lv_cache_find_data(dsc->img_data);
+    lv_cache_release(cache);
+}
+
+
+
 static lv_res_t try_cache(lv_img_decoder_dsc_t * dsc)
 {
     if(dsc->src_type == LV_IMG_SRC_FILE) {
@@ -199,7 +213,7 @@ static lv_res_t try_cache(lv_img_decoder_dsc_t * dsc)
 
         lv_cache_entry_t * cache = lv_cache_find_str(fn, 0, 0);
         if(cache) {
-            dsc->img_data = cache->data;
+            dsc->img_data = lv_cache_get_data(cache);
             return LV_RES_OK;
         }
     }
@@ -209,7 +223,7 @@ static lv_res_t try_cache(lv_img_decoder_dsc_t * dsc)
 
         lv_cache_entry_t * cache = lv_cache_find_ptr(img_dsc, 0, 0);
         if(cache) {
-            dsc->img_data = cache->data;
+            dsc->img_data = lv_cache_get_data(cache);
             return LV_RES_OK;
         }
     }

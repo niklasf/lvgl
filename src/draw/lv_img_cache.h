@@ -43,6 +43,11 @@ typedef struct {
     /** The current `life`. Entries with the smallest life will be purged from the cache if a new entry needs to be cached*/
     int32_t life;
 
+    /** Count how many times the cached data is being used.
+     * It will be incremented in lv_cache_get_data and decremented in lv_cache_release.
+     * A data will dropped from the cache only if its usage_count is zero */
+    uint32_t usage_count;
+
     /** `src` is a string, so compare it with `lv_strcmp()` */
     uint32_t str_src   : 1;
 
@@ -55,10 +60,6 @@ typedef struct {
     /**Any user data if needed*/
     void * user_data;
 } lv_cache_entry_t;
-
-
-
-
 
 
 typedef struct {
@@ -89,7 +90,11 @@ lv_cache_entry_t * lv_cache_find_ptr(const void * src_ptr, uint32_t param1, uint
 
 lv_cache_entry_t * lv_cache_find_str(const char * src_str, uint32_t param1, uint32_t param2);
 
+lv_cache_entry_t * lv_cache_find_data(const void * data);
+
 const void * lv_cache_get_data(lv_cache_entry_t * entry);
+
+void lv_cache_release(lv_cache_entry_t * entry);
 
 void lv_cache_invalidate(lv_cache_entry_t * entry);
 
