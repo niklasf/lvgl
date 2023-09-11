@@ -125,20 +125,20 @@ lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * 
     }
 
     if(btn_txts) {
-        mbox->btns = lv_buttonmatrix_create(obj);
-        lv_buttonmatrix_set_map(mbox->btns, btn_txts);
-        lv_buttonmatrix_set_button_ctrl_all(mbox->btns, LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_NO_REPEAT);
+        mbox->buttons = lv_buttonmatrix_create(obj);
+        lv_buttonmatrix_set_map(mbox->buttons, btn_txts);
+        lv_buttonmatrix_set_button_ctrl_all(mbox->buttons, LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_NO_REPEAT);
 
         uint32_t btn_cnt = 0;
         while(btn_txts[btn_cnt] && btn_txts[btn_cnt][0] != '\0') {
             btn_cnt++;
         }
 
-        const lv_font_t * font = lv_obj_get_style_text_font(mbox->btns, LV_PART_ITEMS);
+        const lv_font_t * font = lv_obj_get_style_text_font(mbox->buttons, LV_PART_ITEMS);
         lv_coord_t btn_h = lv_font_get_line_height(font) + LV_DPI_DEF / 10;
-        lv_obj_set_size(mbox->btns, btn_cnt * (2 * LV_DPI_DEF / 3), btn_h);
-        lv_obj_set_style_max_width(mbox->btns, lv_pct(100), 0);
-        lv_obj_add_flag(mbox->btns, LV_OBJ_FLAG_EVENT_BUBBLE);    /*To see the event directly on the message box*/
+        lv_obj_set_size(mbox->buttons, btn_cnt * (2 * LV_DPI_DEF / 3), btn_h);
+        lv_obj_set_style_max_width(mbox->buttons, lv_pct(100), 0);
+        lv_obj_add_flag(mbox->buttons, LV_OBJ_FLAG_EVENT_BUBBLE);    /*To see the event directly on the message box*/
     }
 
     return obj;
@@ -173,22 +173,22 @@ lv_obj_t * lv_msgbox_get_content(lv_obj_t * obj)
     return mbox->content;
 }
 
-lv_obj_t * lv_msgbox_get_btns(lv_obj_t * obj)
+lv_obj_t * lv_msgbox_get_buttons(lv_obj_t * obj)
 {
     LV_ASSERT_OBJ(obj, MY_CLASS);
     lv_msgbox_t * mbox = (lv_msgbox_t *)obj;
-    return mbox->btns;
+    return mbox->buttons;
 }
 
 uint16_t lv_msgbox_get_active_button(lv_obj_t * mbox)
 {
-    lv_obj_t * btnm = lv_msgbox_get_btns(mbox);
+    lv_obj_t * btnm = lv_msgbox_get_buttons(mbox);
     return lv_buttonmatrix_get_selected_button(btnm);
 }
 
 const char * lv_msgbox_get_active_button_text(lv_obj_t * mbox)
 {
-    lv_obj_t * btnm = lv_msgbox_get_btns(mbox);
+    lv_obj_t * btnm = lv_msgbox_get_buttons(mbox);
     return lv_buttonmatrix_get_button_text(btnm, lv_buttonmatrix_get_selected_button(btnm));
 }
 

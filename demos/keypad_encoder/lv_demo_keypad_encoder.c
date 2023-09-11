@@ -162,11 +162,11 @@ static void text_input_create(lv_obj_t * parent)
 
 static void msgbox_create(void)
 {
-    static const char * btns[] = {"Ok", "Cancel", ""};
-    lv_obj_t * mbox = lv_msgbox_create(NULL, "Hi", "Welcome to the keyboard and encoder demo", btns, false);
+    static const char * buttons[] = {"Ok", "Cancel", ""};
+    lv_obj_t * mbox = lv_msgbox_create(NULL, "Hi", "Welcome to the keyboard and encoder demo", buttons, false);
     lv_obj_add_event(mbox, msgbox_event_cb, LV_EVENT_ALL, NULL);
-    lv_group_focus_obj(lv_msgbox_get_btns(mbox));
-    lv_obj_add_state(lv_msgbox_get_btns(mbox), LV_STATE_FOCUS_KEY);
+    lv_group_focus_obj(lv_msgbox_get_buttons(mbox));
+    lv_obj_add_state(lv_msgbox_get_buttons(mbox), LV_STATE_FOCUS_KEY);
     lv_group_focus_freeze(g, true);
 
     lv_obj_align(mbox, LV_ALIGN_CENTER, 0, 0);

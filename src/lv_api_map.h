@@ -32,6 +32,36 @@ static inline LV_ATTRIBUTE_TIMER_HANDLER uint32_t lv_task_handler(void)
     return lv_timer_handler();
 }
 
+
+/**
+ * Move the object to the foreground.
+ * It will look like if it was created as the last child of its parent.
+ * It also means it can cover any of the siblings.
+ * @param obj       pointer to an object
+ */
+static inline void lv_obj_move_foreground(lv_obj_t * obj)
+{
+    lv_obj_t * parent = lv_obj_get_parent(obj);
+    if(!parent) {
+        LV_LOG_WARN("parent is NULL");
+        return;
+    }
+
+    lv_obj_move_to_index(obj, lv_obj_get_child_cnt(parent) - 1);
+}
+
+/**
+ * Move the object to the background.
+ * It will look like if it was created as the first child of its parent.
+ * It also means any of the siblings can cover the object.
+ * @param obj       pointer to an object
+ */
+static inline void lv_obj_move_background(lv_obj_t * obj)
+{
+    lv_obj_move_to_index(obj, 0);
+}
+
+
 /**********************
  *      MACROS
  **********************/
@@ -76,6 +106,9 @@ static inline LV_ATTRIBUTE_TIMER_HANDLER uint32_t lv_task_handler(void)
 #define lv_btnmatrix_has_button_ctrl         lv_buttonmatrix_has_button_ctrl
 #define lv_btnmatrix_get_one_checked         lv_buttonmatrix_get_one_checked
 
+#define lv_tabview_get_tab_btns              lv_tabview_get_tab_buttons
+
+#define lv_msgbox_get_btns                   lv_msgbox_get_buttons
 
 /**********************
  *      MACROS

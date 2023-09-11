@@ -169,19 +169,19 @@ void lv_demo_widgets(void)
     lv_obj_set_style_text_font(lv_scr_act(), font_normal, 0);
 
     if(disp_size == DISP_LARGE) {
-        lv_obj_t * tab_btns = lv_tabview_get_tab_btns(tv);
-        lv_obj_set_style_pad_left(tab_btns, LV_HOR_RES / 2, 0);
-        lv_obj_t * logo = lv_image_create(tab_btns);
+        lv_obj_t * tab_buttons = lv_tabview_get_tab_buttons(tv);
+        lv_obj_set_style_pad_left(tab_buttons, LV_HOR_RES / 2, 0);
+        lv_obj_t * logo = lv_image_create(tab_buttons);
         LV_IMAGE_DECLARE(img_lvgl_logo);
         lv_image_set_src(logo, &img_lvgl_logo);
         lv_obj_align(logo, LV_ALIGN_LEFT_MID, -LV_HOR_RES / 2 + 25, 0);
 
-        lv_obj_t * label = lv_label_create(tab_btns);
+        lv_obj_t * label = lv_label_create(tab_buttons);
         lv_obj_add_style(label, &style_title, 0);
         lv_label_set_text_fmt(label, "LVGL v%d.%d.%d", lv_version_major(), lv_version_minor(), lv_version_patch());
         lv_obj_align_to(label, logo, LV_ALIGN_OUT_RIGHT_TOP, 10, 0);
 
-        label = lv_label_create(tab_btns);
+        label = lv_label_create(tab_buttons);
         lv_label_set_text(label, "Widgets demo");
         lv_obj_add_style(label, &style_text_muted, 0);
         lv_obj_align_to(label, logo, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
