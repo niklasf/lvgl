@@ -2,7 +2,7 @@
 import lvgl as lv
 import display_driver
 import fs_driver
-from image_bulb_gif import image_bulb_gif_map
+from img_bulb_gif import img_bulb_gif_map
 
 fs_drv = lv.fs_drv_t()
 fs_driver.fs_register(fs_drv, 'S')
@@ -13,7 +13,7 @@ image_bulb_gif = lv.image_dsc_t(
     {
         "header": {"always_zero": 0, "w": 0, "h": 0,  "cf": lv.COLOR_FORMAT.RAW},
         "data_size": 0,
-        "data": image_bulb_gif_map,
+        "data": img_bulb_gif_map,
     }
 )
 image1 = lv.gif(lv.scr_act())

@@ -5,10 +5,10 @@ def ofs_y_anim(image, v):
 
 # Create an image from the png file
 try:
-    with open('../../assets/image_skew_strip.png','rb') as f:
+    with open('../../assets/img_skew_strip.png','rb') as f:
         png_data = f.read()
 except:
-    print("Could not find image_skew_strip.png")
+    print("Could not find img_skew_strip.png")
     sys.exit()
 
 image_skew_strip = lv.image_dsc_t({

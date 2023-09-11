@@ -1,13 +1,13 @@
 #!/opt/bin/lv_micropython -i
 import lvgl as lv
 import display_driver
-from image_wink_png import image_wink_png_map
+from img_wink_png import img_wink_png_map
 
 image_wink_png = lv.image_dsc_t(
     {
         "header": {"always_zero": 0, "w": 50, "h": 50,  "cf": lv.COLOR_FORMAT.RAW_ALPHA},
         "data_size": 5158,
-        "data": image_wink_png_map,
+        "data": img_wink_png_map,
     }
 )
 image1 = lv.image(lv.scr_act())

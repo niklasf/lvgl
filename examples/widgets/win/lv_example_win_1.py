@@ -2,7 +2,7 @@ def event_handler(e):
     code = e.get_code()
     obj = e.get_target_obj()
     if code == lv.EVENT.CLICKED:
-        print("Button {:d} clicked".format(obj.get_child_id()))
+        print("Button {:d} clicked".format(obj.get_index()))
 
 
 win = lv.win(lv.scr_act())
