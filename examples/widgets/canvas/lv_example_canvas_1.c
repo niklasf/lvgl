@@ -52,7 +52,7 @@ void lv_example_canvas_1(void)
      *So copy the current image to buffer and rotate it to the canvas*/
     static uint8_t cbuf_tmp[LV_CANVAS_BUF_SIZE_TRUE_COLOR(CANVAS_WIDTH, CANVAS_HEIGHT)];
     lv_memcpy(cbuf_tmp, cbuf, sizeof(cbuf_tmp));
-    lv_img_dsc_t img;
+    lv_image_dsc_t img;
     img.data = (void *)cbuf_tmp;
     img.header.cf = LV_COLOR_FORMAT_NATIVE;
     img.header.w = CANVAS_WIDTH;
@@ -62,8 +62,8 @@ void lv_example_canvas_1(void)
 
     lv_canvas_fill_bg(canvas, lv_palette_lighten(LV_PALETTE_GREY, 1), LV_OPA_COVER);
 
-    lv_draw_img_dsc_t img_dsc;
-    lv_draw_img_dsc_init(&img_dsc);
+    lv_draw_image_dsc_t img_dsc;
+    lv_draw_image_dsc_init(&img_dsc);
     img_dsc.angle = 120;
     img_dsc.src = &img;
     img_dsc.pivot.x = CANVAS_WIDTH / 2;

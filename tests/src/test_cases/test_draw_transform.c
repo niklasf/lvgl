@@ -48,7 +48,7 @@ static void canvas_basic_render(lv_color_format_t render_cf, uint8_t * canvas_bu
     lv_obj_del(canvas);
 }
 
-static void draw_images(lv_layer_t * layer, lv_draw_img_dsc_t * dsc)
+static void draw_images(lv_layer_t * layer, lv_draw_image_dsc_t * dsc)
 {
     /* Angle */
     lv_area_t area = { 10, 30, 109, 129};
@@ -160,7 +160,7 @@ void create_test_screen(lv_color_format_t render_cf, const char * name)
 
     static uint8_t canvas_buf_small[100 * 100 * 4];
 
-    lv_img_dsc_t img;
+    lv_image_dsc_t img;
     img.data = canvas_buf_small;
     img.header.cf = render_cf;
     img.header.w = 100;
@@ -168,8 +168,8 @@ void create_test_screen(lv_color_format_t render_cf, const char * name)
     img.header.stride = 100 * lv_color_format_get_size(render_cf);
     img.header.always_zero = 0;
 
-    lv_draw_img_dsc_t img_dsc;
-    lv_draw_img_dsc_init(&img_dsc);
+    lv_draw_image_dsc_t img_dsc;
+    lv_draw_image_dsc_init(&img_dsc);
     img_dsc.src = &img;
 
     canvas_basic_render(render_cf, canvas_buf_small);

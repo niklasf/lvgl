@@ -188,7 +188,7 @@ static lv_obj_t * spinbox_ctrl_create(lv_obj_t * par, lv_style_prop_t prop, lv_o
         lv_style_set_text_color(&btn_style, lv_theme_get_color_primary(par));
     }
 
-    lv_obj_t * btn_dec = lv_btn_create(cont_spinbox);
+    lv_obj_t * btn_dec = lv_button_create(cont_spinbox);
     lv_obj_set_width(btn_dec, 30);
     lv_obj_add_style(btn_dec, &btn_style, LV_PART_MAIN);
     label = lv_label_create(btn_dec);
@@ -208,7 +208,7 @@ static lv_obj_t * spinbox_ctrl_create(lv_obj_t * par, lv_style_prop_t prop, lv_o
     lv_spinbox_set_digit_format(spinbox, 3, 0);
     lv_spinbox_step_prev(spinbox);
 
-    lv_obj_t * btn_inc = lv_btn_create(cont_spinbox);
+    lv_obj_t * btn_inc = lv_button_create(cont_spinbox);
     lv_obj_set_width(btn_inc, 30);
     lv_obj_add_style(btn_inc, &btn_style, LV_PART_MAIN);
     label = lv_label_create(btn_inc);

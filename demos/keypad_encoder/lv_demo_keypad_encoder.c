@@ -102,7 +102,7 @@ static void selectors_create(lv_obj_t * parent)
     obj = lv_calendar_create(parent);
     lv_obj_add_flag(obj, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
 
-    obj = lv_btnmatrix_create(parent);
+    obj = lv_buttonmatrix_create(parent);
     lv_obj_add_flag(obj, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
 
     obj = lv_checkbox_create(parent);
@@ -130,13 +130,13 @@ static void selectors_create(lv_obj_t * parent)
         lv_obj_set_height(list, lv_obj_get_content_height(parent));
     }
 
-    lv_list_add_btn(list, LV_SYMBOL_OK, "Apply");
-    lv_list_add_btn(list, LV_SYMBOL_CLOSE, "Close");
-    lv_list_add_btn(list, LV_SYMBOL_EYE_OPEN, "Show");
-    lv_list_add_btn(list, LV_SYMBOL_EYE_CLOSE, "Hide");
-    lv_list_add_btn(list, LV_SYMBOL_TRASH, "Delete");
-    lv_list_add_btn(list, LV_SYMBOL_COPY, "Copy");
-    lv_list_add_btn(list, LV_SYMBOL_PASTE, "Paste");
+    lv_list_add_button(list, LV_SYMBOL_OK, "Apply");
+    lv_list_add_button(list, LV_SYMBOL_CLOSE, "Close");
+    lv_list_add_button(list, LV_SYMBOL_EYE_OPEN, "Show");
+    lv_list_add_button(list, LV_SYMBOL_EYE_CLOSE, "Hide");
+    lv_list_add_button(list, LV_SYMBOL_TRASH, "Delete");
+    lv_list_add_button(list, LV_SYMBOL_COPY, "Copy");
+    lv_list_add_button(list, LV_SYMBOL_PASTE, "Paste");
 }
 
 static void text_input_create(lv_obj_t * parent)

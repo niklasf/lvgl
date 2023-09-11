@@ -119,7 +119,7 @@ void lv_imgbtn_set_state(lv_obj_t * obj, lv_imgbtn_state_t state)
 /**
  * Get the left image in a given state
  * @param obj pointer to an image button object
- * @param state the state where to get the image (from `lv_btn_state_t`) `
+ * @param state the state where to get the image (from `lv_button_state_t`) `
  * @return pointer to the left image source (a C array or path to a file)
  */
 const void * lv_imgbtn_get_src_left(lv_obj_t * obj, lv_imgbtn_state_t state)
@@ -134,7 +134,7 @@ const void * lv_imgbtn_get_src_left(lv_obj_t * obj, lv_imgbtn_state_t state)
 /**
  * Get the middle image in a given state
  * @param obj pointer to an image button object
- * @param state the state where to get the image (from `lv_btn_state_t`) `
+ * @param state the state where to get the image (from `lv_button_state_t`) `
  * @return pointer to the middle image source (a C array or path to a file)
  */
 const void * lv_imgbtn_get_src_middle(lv_obj_t * obj, lv_imgbtn_state_t state)
@@ -148,7 +148,7 @@ const void * lv_imgbtn_get_src_middle(lv_obj_t * obj, lv_imgbtn_state_t state)
 /**
  * Get the right image in a given state
  * @param obj pointer to an image button object
- * @param state the state where to get the image (from `lv_btn_state_t`) `
+ * @param state the state where to get the image (from `lv_button_state_t`) `
  * @return pointer to the left image source (a C array or path to a file)
  */
 const void * lv_imgbtn_get_src_right(lv_obj_t * obj, lv_imgbtn_state_t state)
@@ -225,9 +225,9 @@ static void draw_main(lv_event_t * e)
     lv_area_copy(&coords, &obj->coords);
     lv_area_increase(&coords, tw, th);
 
-    lv_draw_img_dsc_t img_dsc;
-    lv_draw_img_dsc_init(&img_dsc);
-    lv_obj_init_draw_img_dsc(obj, LV_PART_MAIN, &img_dsc);
+    lv_draw_image_dsc_t img_dsc;
+    lv_draw_image_dsc_init(&img_dsc);
+    lv_obj_init_draw_image_dsc(obj, LV_PART_MAIN, &img_dsc);
 
     lv_area_t coords_part;
     lv_coord_t left_w = 0;
@@ -366,7 +366,7 @@ static void update_src_info(lv_imgbtn_src_info_t * info, const void * src)
         return;
     }
 
-    lv_res_t res = lv_img_decoder_get_info(src, &info->header);
+    lv_res_t res = lv_image_decoder_get_info(src, &info->header);
     if(res != LV_RES_OK) {
         LV_LOG_WARN("can't get info");
         return;

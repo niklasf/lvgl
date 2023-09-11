@@ -109,18 +109,18 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * obj, const char * name)
         }
     }
     tabview->map = new_map;
-    lv_btnmatrix_set_map(btns, (const char **)new_map);
+    lv_buttonmatrix_set_map(btns, (const char **)new_map);
     lv_free(old_map);
 
-    lv_btnmatrix_set_btn_ctrl_all(btns, LV_BTNMATRIX_CTRL_CHECKABLE | LV_BTNMATRIX_CTRL_CLICK_TRIG |
-                                  LV_BTNMATRIX_CTRL_NO_REPEAT);
+    lv_buttonmatrix_set_button_ctrl_all(btns, LV_BUTTONMATRIX_CTRL_CHECKABLE | LV_BUTTONMATRIX_CTRL_CLICK_TRIG |
+                                        LV_BUTTONMATRIX_CTRL_NO_REPEAT);
 
     tabview->tab_cnt++;
     if(tabview->tab_cnt == 1) {
         lv_tabview_set_act(obj, 0, LV_ANIM_OFF);
     }
 
-    lv_btnmatrix_set_btn_ctrl(btns, tabview->tab_cur, LV_BTNMATRIX_CTRL_CHECKED);
+    lv_buttonmatrix_set_button_ctrl(btns, tabview->tab_cur, LV_BUTTONMATRIX_CTRL_CHECKED);
 
     return page;
 }
@@ -172,7 +172,7 @@ void lv_tabview_set_act(lv_obj_t * obj, uint32_t id, lv_anim_enable_t anim_en)
     }
 
     lv_obj_t * btns = lv_tabview_get_tab_btns(obj);
-    lv_btnmatrix_set_btn_ctrl(btns, id, LV_BTNMATRIX_CTRL_CHECKED);
+    lv_buttonmatrix_set_button_ctrl(btns, id, LV_BUTTONMATRIX_CTRL_CHECKED);
     tabview->tab_cur = id;
 }
 
@@ -224,13 +224,13 @@ static void lv_tabview_constructor(const lv_obj_class_t * class_p, lv_obj_t * ob
     lv_obj_t * btnm;
     lv_obj_t * cont;
 
-    btnm = lv_btnmatrix_create(obj);
+    btnm = lv_buttonmatrix_create(obj);
     cont = lv_obj_create(obj);
 
-    lv_btnmatrix_set_one_checked(btnm, true);
+    lv_buttonmatrix_set_one_checked(btnm, true);
     tabview->map = lv_malloc(sizeof(const char *));
     tabview->map[0] = (char *)"";
-    lv_btnmatrix_set_map(btnm, (const char **)tabview->map);
+    lv_buttonmatrix_set_map(btnm, (const char **)tabview->map);
     lv_obj_add_event(btnm, btns_value_changed_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
     lv_obj_add_flag(btnm, LV_OBJ_FLAG_EVENT_BUBBLE);
 
@@ -311,7 +311,7 @@ static void btns_value_changed_event_cb(lv_event_t * e)
     lv_obj_t * btns = lv_event_get_target(e);
 
     lv_obj_t * tv = lv_obj_get_parent(btns);
-    uint32_t id = lv_btnmatrix_get_selected_btn(btns);
+    uint32_t id = lv_buttonmatrix_get_selected_button(btns);
     lv_tabview_set_act(tv, id, LV_ANIM_OFF);
 }
 
