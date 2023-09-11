@@ -5,7 +5,7 @@ LV_COLOR_SIZE = 32
 
 # Create an image from the png file
 try:
-    with open('../../assets/image_star.png','rb') as f:
+    with open('../../assets/img_star.png','rb') as f:
         png_data = f.read()
 except:
     print("Could not find star.png")

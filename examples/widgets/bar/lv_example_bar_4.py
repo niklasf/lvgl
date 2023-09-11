@@ -1,9 +1,9 @@
 # Create an image from the png file
 try:
-    with open('../../assets/image_strip.png','rb') as f:
+    with open('../../assets/img_strip.png','rb') as f:
         png_data = f.read()
 except:
-    print("Could not find image_strip.png")
+    print("Could not find img_strip.png")
     sys.exit()
 
 image_skew_strip_dsc = lv.image_dsc_t({

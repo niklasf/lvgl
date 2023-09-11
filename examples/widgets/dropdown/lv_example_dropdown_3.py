@@ -1,6 +1,6 @@
 # Create an image from the png file
 try:
-    with open('../../assets/image_caret_down.png','rb') as f:
+    with open('../../assets/img_caret_down.png','rb') as f:
         png_data = f.read()
 except:
     print("Could not find image_caret_down.png")
