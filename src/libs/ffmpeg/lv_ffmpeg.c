@@ -543,7 +543,7 @@ static int ffmpeg_open_codec_context(int * stream_idx,
 }
 
 static int ffmpeg_get_image_header(const char * filepath,
-                                 lv_image_header_t * header)
+                                   lv_image_header_t * header)
 {
     int ret = -1;
 

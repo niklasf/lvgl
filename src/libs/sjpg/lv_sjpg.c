@@ -107,7 +107,8 @@ typedef struct {
  **********************/
 static lv_res_t decoder_info(lv_image_decoder_t * decoder, const void * src, lv_image_header_t * header);
 static lv_res_t decoder_open(lv_image_decoder_t * decoder, lv_image_decoder_dsc_t * dsc);
-static lv_res_t decoder_read_line(lv_image_decoder_t * decoder, lv_image_decoder_dsc_t * dsc, lv_coord_t x, lv_coord_t y,
+static lv_res_t decoder_read_line(lv_image_decoder_t * decoder, lv_image_decoder_dsc_t * dsc, lv_coord_t x,
+                                  lv_coord_t y,
                                   lv_coord_t len, uint8_t * buf);
 static void decoder_close(lv_image_decoder_t * decoder, lv_image_decoder_dsc_t * dsc);
 static size_t input_func(JDEC * jd, uint8_t * buff, size_t ndata);
@@ -722,7 +723,8 @@ end:
  * @return LV_RES_OK: ok; LV_RES_INV: failed
  */
 
-static lv_res_t decoder_read_line(lv_image_decoder_t * decoder, lv_image_decoder_dsc_t * dsc, lv_coord_t x, lv_coord_t y,
+static lv_res_t decoder_read_line(lv_image_decoder_t * decoder, lv_image_decoder_dsc_t * dsc, lv_coord_t x,
+                                  lv_coord_t y,
                                   lv_coord_t len, uint8_t * buf)
 {
     LV_UNUSED(decoder);
