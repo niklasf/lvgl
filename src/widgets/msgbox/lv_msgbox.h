@@ -40,7 +40,7 @@ typedef struct {
     lv_obj_t * close_btn;
     lv_obj_t * content;
     lv_obj_t * text;
-    lv_obj_t * btns;
+    lv_obj_t * buttons;
 } lv_msgbox_t;
 
 extern const lv_obj_class_t lv_msgbox_class;
@@ -71,7 +71,7 @@ lv_obj_t * lv_msgbox_get_text(lv_obj_t * obj);
 
 lv_obj_t * lv_msgbox_get_content(lv_obj_t * obj);
 
-lv_obj_t * lv_msgbox_get_btns(lv_obj_t * obj);
+lv_obj_t * lv_msgbox_get_buttons(lv_obj_t * obj);
 
 /**
  * Get the index of the selected button
