@@ -114,11 +114,13 @@ static void _evdev_read(lv_indev_t * indev, lv_indev_data_t * data)
     LV_ASSERT_NULL(dsc);
 
     /*Update dsc with buffered events*/
+    int wheel = 0;
     struct input_event in = { 0 };
     while(read(dsc->fd, &in, sizeof(in)) > 0) {
         if(in.type == EV_REL) {
             if(in.code == REL_X) dsc->root_x += in.value;
             else if(in.code == REL_Y) dsc->root_y += in.value;
+            else if(in.code == REL_WHEEL) wheel += in.value;
         }
         else if(in.type == EV_ABS) {
             if(in.code == ABS_X || in.code == ABS_MT_POSITION_X) dsc->root_x = in.value;
@@ -153,8 +155,14 @@ static void _evdev_read(lv_indev_t * indev, lv_indev_data_t * data)
         case LV_INDEV_TYPE_POINTER:
             data->state = dsc->state;
             data->point = _evdev_process_pointer(indev, dsc->root_x, dsc->root_y);
+            data->enc_diff = wheel;
             break;
-        default:
+        case LV_INDEV_TYPE_ENCODER:
+            data->state = dsc->state;
+            data->enc_diff = wheel;
+            break;
+        case LV_INDEV_TYPE_BUTTON:
+            data->state = dsc->state;
             break;
     }
 }
