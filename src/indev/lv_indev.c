@@ -1364,8 +1364,9 @@ static void indev_proc_release(lv_indev_t * indev)
 
 static void indev_proc_pointer_diff(lv_indev_t * indev)
 {
-    lv_obj_t * obj = indev->pointer.last_pressed;
-    if(obj == NULL) return;
+    lv_obj_t * obj = indev->pointer.last_hovered;
+    if(!obj) obj = indev->pointer.last_pressed;
+    if(!obj) return;
     if(indev->pointer.diff == 0) return;
 
     indev_obj_act = obj;
