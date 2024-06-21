@@ -26,6 +26,8 @@
  **********************/
 
 typedef struct _x11_inp_data {
+    /*Configuration*/
+    lv_x11_mousewheel_mode_t mousewheel_mode;
     /* LVGL related information */
     lv_group_t * inp_group;      /**< input group for X input elements */
     lv_indev_t * keyboard;       /**< keyboard input device object */
@@ -246,6 +248,11 @@ static void x11_mouse_read_cb(lv_indev_t * indev, lv_indev_data_t * data)
 
     data->point = xd->mouse_pos;
     data->state = xd->left_mouse_btn ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
+
+    if(xd->mousewheel_mode == LV_X11_MOUSEWHEEL_MODE_CROWN) {
+        data->enc_diff = -xd->wheel_cnt;
+        xd->wheel_cnt = 0;
+    }
 }
 
 static void x11_mousewheel_read_cb(lv_indev_t * indev, lv_indev_data_t * data)
@@ -253,9 +260,11 @@ static void x11_mousewheel_read_cb(lv_indev_t * indev, lv_indev_data_t * data)
     lv_display_t * disp = lv_indev_get_driver_data(indev);
     x11_inp_data_t * xd = x11_input_get_user_data(disp);
 
-    data->state    = xd->wheel_mouse_btn ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
-    data->enc_diff = xd->wheel_cnt;
-    xd->wheel_cnt  = 0;
+    if(xd->mousewheel_mode == LV_X11_MOUSEWHEEL_MODE_ENCODER) {
+        data->state    = xd->wheel_mouse_btn ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
+        data->enc_diff = xd->wheel_cnt;
+        xd->wheel_cnt  = 0;
+    }
 }
 
 static lv_indev_t * lv_x11_keyboard_create(lv_display_t * disp)
@@ -319,6 +328,14 @@ void lv_x11_inputs_create(lv_display_t * disp, lv_image_dsc_t const * mouse_img)
 
     xd->keyboard = lv_x11_keyboard_create(disp);
     lv_indev_set_group(xd->keyboard, xd->inp_group);
+}
+
+void lv_x11_set_mousewheel_mode(lv_display_t * disp, lv_x11_mousewheel_mode_t mode)
+{
+    x11_inp_data_t * xd = x11_input_get_user_data(disp);
+    LV_ASSERT_NULL(xd);
+
+    xd->mousewheel_mode = mode;
 }
 
 #endif /*LV_USE_X11*/

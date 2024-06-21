@@ -23,6 +23,15 @@ extern "C" {
  *      DEFINES
  *********************/
 
+/**********************
+ *      TYPEDEFS
+ **********************/
+
+typedef enum {
+    LV_X11_MOUSEWHEEL_MODE_ENCODER,
+    LV_X11_MOUSEWHEEL_MODE_CROWN,
+} lv_x11_mousewheel_mode_t;
+
 /** Header of private display driver user data - for internal use only */
 typedef struct {
     struct _XDisplay   *  display;  /**< X11 display object     */
@@ -39,26 +48,14 @@ typedef void(*lv_x11_close_cb)(void * user_data);
  **********************/
 
 /**
- * create and add keyboard, mouse and scrillwheel objects and connect them to x11 display.
- *
- * This is a convenience method handling the typical input initialisation of an X11 window:
- * - create keyboard (@ref lv_x11_keyboard_create)
- * - create mouse (with scrollwheel, @ref lv_x11_mouse_create @ref lv_x11_mousewheel_create)
- *
- * @param[in] disp      the created X11 display object from @ref lv_x11_window_create
- * @param[in] mouse_img optional image description for the mouse cursor (NULL for no/invisible mouse cursor)
- */
-void lv_x11_inputs_create(lv_display_t * disp, lv_image_dsc_t const * mouse_img);
-
-/**
- * create the X11 display
+ * Create the X11 display.
  *
  * The minimal initialisation for initializing the X11 display driver with keyboard/mouse support:
  * @code
  * lv_display_t* disp = lv_x11_window_create("My Window Title", window_width, window_width);
  * lv_x11_inputs_create(disp, NULL);
  * @endcode
- * or with mouse cursor icon:
+ * Or with mouse cursor icon:
  * @code
  * lv_image_dsc_t mouse_symbol = {.....};
  * lv_display_t* disp = lv_x11_window_create("My Window Title", window_width, window_width);
@@ -71,6 +68,24 @@ void lv_x11_inputs_create(lv_display_t * disp, lv_image_dsc_t const * mouse_img)
  * @return             pointer to the display object
  */
 lv_display_t * lv_x11_window_create(char const * title, int32_t hor_res, int32_t ver_res);
+
+/**
+ * Create and add keyboard, mouse and scrollwheel objects and connect them to the X11 display.
+ *
+ * @param[in] disp      the X11 display object created by @ref lv_x11_window_create
+ * @param[in] mouse_img optional image description for the mouse cursor (NULL for no/invisible mouse cursor)
+ */
+void lv_x11_inputs_create(lv_display_t * disp, lv_image_dsc_t const * mouse_img);
+
+/**
+ * Configure the mousewheel to function as an encoder, or as a crown/scrollwheel.
+ *
+ * Only effective for inputs created with @ref lv_x11_inputs_create.
+ *
+ * @param[in] disp the X11 display object created by @ref lv_x11_window_create
+ * @param[in] mode LV_X11_MOUSEWHEEL_MODE_ENCODER (default) or LV_X11_MOUSEWHEEL_MODE_CROWN
+ */
+void lv_x11_set_mousewheel_mode(lv_display_t * disp, lv_x11_mousewheel_mode_t mode);
 
 #endif /* LV_USE_X11 */
 
