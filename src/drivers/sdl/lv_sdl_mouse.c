@@ -190,10 +190,9 @@ void _lv_sdl_mouse_handler(SDL_Event * event)
 #if LV_SDL_MOUSEWHEEL_MODE == LV_SDL_MOUSEWHEEL_MODE_CROWN
 #ifdef __EMSCRIPTEN__
             /*Escripten scales it wrong*/
-            if(event->wheel.y < 0) dsc->diff++;
-            if(event->wheel.y > 0) dsc->diff--;
+            indev_dev->diff = (event.wheel.y > 0) - (event.wheel.y < 0);
 #else
-            indev_dev->diff = -event->wheel.y;
+            indev_dev->diff = event->wheel.y;
 #endif  /*__EMSCRIPTEN__*/
 #endif /*LV_SDL_MOUSEWHEEL_MODE == LV_SDL_MOUSEWHEEL_MODE_CROWN*/
             break;
