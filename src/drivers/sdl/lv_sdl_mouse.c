@@ -61,7 +61,7 @@ lv_indev_t * lv_sdl_mouse_create(void)
     lv_indev_set_read_cb(indev, sdl_mouse_read);
     lv_indev_set_driver_data(indev, dsc);
 
-    lv_indev_set_mode(indev, LV_INDEV_MODE_EVENT);
+    //lv_indev_set_mode(indev, LV_INDEV_MODE_EVENT);
     lv_indev_add_event_cb(indev, release_indev_cb, LV_EVENT_DELETE, indev);
 
     return indev;
@@ -198,7 +198,7 @@ void lv_sdl_mouse_handler(SDL_Event * event)
 #endif /*LV_SDL_MOUSEWHEEL_MODE == LV_SDL_MOUSEWHEEL_MODE_CROWN*/
             break;
     }
-    lv_indev_read(indev);
+    //lv_indev_read(indev);
 }
 
 #endif /*LV_USE_SDL*/
