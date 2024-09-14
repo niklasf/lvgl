@@ -1250,12 +1250,22 @@ static void indev_proc_press(lv_indev_t * indev)
         }
     }
 
-    /*Calculate the vector and apply a low pass filter: new value = 0.5 * old_value + 0.5 * new_value*/
+    /*Update vector and scroll throw vector*/
     indev->pointer.vect.x = indev->pointer.act_point.x - indev->pointer.last_point.x;
     indev->pointer.vect.y = indev->pointer.act_point.y - indev->pointer.last_point.y;
 
-    indev->pointer.scroll_throw_vect.x = (indev->pointer.scroll_throw_vect.x + indev->pointer.vect.x) / 2;
-    indev->pointer.scroll_throw_vect.y = (indev->pointer.scroll_throw_vect.y + indev->pointer.vect.y) / 2;
+    indev->pointer.vect_hist[indev->pointer.vect_hist_index] = indev->pointer.vect;
+    indev->pointer.vect_hist_timestamp[indev->pointer.vect_hist_index] = lv_tick_get();
+    indev->pointer.vect_hist_index = (indev->pointer.vect_hist_index + 1) % LV_INDEV_VECT_HIST_SIZE;
+
+    indev->pointer.scroll_throw_vect.x = 0;
+    indev->pointer.scroll_throw_vect.y = 0;
+    for(int i = 0; i < LV_INDEV_VECT_HIST_SIZE; i++) {
+        if(lv_tick_elaps(indev->pointer.vect_hist_timestamp[i]) < 60) {
+            indev->pointer.scroll_throw_vect.x += indev->pointer.vect_hist[i].x;
+            indev->pointer.scroll_throw_vect.y += indev->pointer.vect_hist[i].y;
+        }
+    }
 
     indev->pointer.scroll_throw_vect_ori = indev->pointer.scroll_throw_vect;
 
