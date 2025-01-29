@@ -242,6 +242,7 @@ if(NOT (CMAKE_C_COMPILER_ID STREQUAL "MSVC"))
         -Wno-deprecated-copy-with-user-provided-dtor
         -Wno-float-conversion
         -Wno-pedantic
+        -Wno-type-limits
     )
 else()
     # Options test cases are compiled with.

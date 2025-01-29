@@ -635,70 +635,30 @@ static uint32_t lv_text_utf8_conv_wc(uint32_t c)
  */
 static uint32_t lv_text_utf8_next(const char * txt, uint32_t * i)
 {
-    /**
-     * Unicode to UTF-8
-     * 00000000 00000000 00000000 0xxxxxxx -> 0xxxxxxx
-     * 00000000 00000000 00000yyy yyxxxxxx -> 110yyyyy 10xxxxxx
-     * 00000000 00000000 zzzzyyyy yyxxxxxx -> 1110zzzz 10yyyyyy 10xxxxxx
-     * 00000000 000wwwzz zzzzyyyy yyxxxxxx -> 11110www 10zzzzzz 10yyyyyy 10xxxxxx
-     */
-
-    uint32_t result = 0;
-
-    /*Dummy 'i' pointer is required*/
-    uint32_t i_tmp = 0;
-    if(i == NULL) i = &i_tmp;
-
-    /*Normal ASCII*/
-    if(LV_IS_ASCII(txt[*i])) {
-        result = txt[*i];
-        (*i)++;
+    unsigned char padded[4] = {0};
+    uint32_t old_i = i ? *i : 0;
+    for (int j = 0; j < 4; j++) {
+        padded[j] = txt[old_i + j];
+        if (!padded[j]) break;
     }
-    /*Real UTF-8 decode*/
-    else {
-        /*2 bytes UTF-8 code*/
-        if(LV_IS_2BYTES_UTF8_CODE(txt[*i])) {
-            result = (uint32_t)(txt[*i] & 0x1F) << 6;
-            (*i)++;
-            if(LV_IS_INVALID_UTF8_CODE(txt[*i])) return 0;
-            result += (txt[*i] & 0x3F);
-            (*i)++;
-        }
-        /*3 bytes UTF-8 code*/
-        else if(LV_IS_3BYTES_UTF8_CODE(txt[*i])) {
-            result = (uint32_t)(txt[*i] & 0x0F) << 12;
-            (*i)++;
 
-            if(LV_IS_INVALID_UTF8_CODE(txt[*i])) return 0;
-            result += (uint32_t)(txt[*i] & 0x3F) << 6;
-            (*i)++;
+    static const char lengths[] = {
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 3, 3, 4, 0
+    };
+    static const char masks[]  = {0x00, 0x7f, 0x1f, 0x0f, 0x07};
+    static const int shiftc[] = {0, 18, 12, 6, 0};
 
-            if(LV_IS_INVALID_UTF8_CODE(txt[*i])) return 0;
-            result += (txt[*i] & 0x3F);
-            (*i)++;
-        }
-        /*4 bytes UTF-8 code*/
-        else if(LV_IS_4BYTES_UTF8_CODE(txt[*i])) {
-            result = (uint32_t)(txt[*i] & 0x07) << 18;
-            (*i)++;
-
-            if(LV_IS_INVALID_UTF8_CODE(txt[*i])) return 0;
-            result += (uint32_t)(txt[*i] & 0x3F) << 12;
-            (*i)++;
-
-            if(LV_IS_INVALID_UTF8_CODE(txt[*i])) return 0;
-            result += (uint32_t)(txt[*i] & 0x3F) << 6;
-            (*i)++;
-
-            if(LV_IS_INVALID_UTF8_CODE(txt[*i])) return 0;
-            result += txt[*i] & 0x3F;
-            (*i)++;
-        }
-        else {
-            (*i)++; /*Not UTF-8 char. Go the next.*/
-        }
+    uint32_t len = lengths[padded[0] >> 3];
+    if (i) {
+        *i = old_i + len + !len;
     }
-    return result;
+
+    uint32_t result  = (uint32_t)(padded[0] & masks[len]) << 18;
+    result |= (uint32_t)(padded[1] & 0x3f) << 12;
+    result |= (uint32_t)(padded[2] & 0x3f) <<  6;
+    result |= (uint32_t)(padded[3] & 0x3f) <<  0;
+    return result >> shiftc[len];
 }
 
 /**
