@@ -76,6 +76,14 @@ void test_align(void)
     create_row(LV_FLEX_ALIGN_SPACE_BETWEEN, 2);
     TEST_ASSERT_EQUAL_SCREENSHOT("align_flex_space_between2.png");
     lv_obj_clean(active_screen);
+
+    create_row(LV_FLEX_ALIGN_SPACE_BETWEEN, 19);
+    TEST_ASSERT_EQUAL_SCREENSHOT("align_flex_space_between19.png");
+    lv_obj_clean(active_screen);
+
+    create_row(LV_FLEX_ALIGN_SPACE_BETWEEN, 20);
+    TEST_ASSERT_EQUAL_SCREENSHOT("align_flex_space_between19.png");
+    lv_obj_clean(active_screen);
 }
 
 /*See https://github.com/lvgl/lvgl/issues/7035*/
