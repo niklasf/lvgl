@@ -1415,24 +1415,23 @@ static void lv_textarea_scroll_to_cusor_pos(lv_obj_t * obj, int32_t pos)
 
     /*The text area needs to have it's final size to see if the cursor is out of the area or not*/
 
-    /*Check the top*/
     int32_t font_h = lv_font_get_line_height(font);
+    int32_t h = lv_obj_get_content_height(obj);
+    int32_t w = lv_obj_get_content_width(obj);
+
+    /*Check the top, then bottom*/
     if(cur_pos.y < lv_obj_get_scroll_top(obj)) {
         lv_obj_scroll_to_y(obj, cur_pos.y, LV_ANIM_ON);
     }
-    /*Check the bottom*/
-    int32_t h = lv_obj_get_content_height(obj);
-    if(cur_pos.y + font_h - lv_obj_get_scroll_top(obj) > h) {
+    else if(cur_pos.y + font_h - lv_obj_get_scroll_top(obj) > h) {
         lv_obj_scroll_to_y(obj, cur_pos.y - h + font_h, LV_ANIM_ON);
     }
 
-    /*Check the left*/
+    /*Check the left, then right*/
     if(cur_pos.x < lv_obj_get_scroll_left(obj)) {
         lv_obj_scroll_to_x(obj, cur_pos.x, LV_ANIM_ON);
     }
-    /*Check the right*/
-    int32_t w = lv_obj_get_content_width(obj);
-    if(cur_pos.x + font_h > lv_obj_get_scroll_left(obj) + w) {
+    else if(cur_pos.x + font_h > lv_obj_get_scroll_left(obj) + w) {
         lv_obj_scroll_to_x(obj, cur_pos.x - w + font_h, LV_ANIM_ON);
     }
 
