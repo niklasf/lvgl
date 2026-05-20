@@ -935,6 +935,7 @@ static void label_event_cb(lv_event_t * e)
         lv_label_set_text(label, NULL);
         refr_cursor_area(ta);
         start_cursor_blink(ta);
+        lv_obj_readjust_scroll(ta, LV_ANIM_ON);
     }
 }
 
