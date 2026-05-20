@@ -544,18 +544,11 @@ void lv_textarea_set_align(lv_obj_t * obj, lv_text_align_t align)
     LV_LOG_WARN("Deprecated: use the normal text_align style property instead");
     lv_obj_set_style_text_align(obj, align, 0);
 
-    switch(align) {
-        default:
-        case LV_TEXT_ALIGN_LEFT:
-            lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_LEFT, 0, 0);
-            break;
-        case LV_TEXT_ALIGN_RIGHT:
-            lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_RIGHT, 0, 0);
-            break;
-        case LV_TEXT_ALIGN_CENTER:
-            lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_MID, 0, 0);
-            break;
-    }
+    /*The label must always be left-aligned within the textarea so the full scroll range
+     *covers all text. Visual text alignment is handled by the text_align style property.
+     *In one-line mode the label has min_width:100%, so short text is rendered centered/right
+     *within the full-width label without any position offset needed.*/
+    lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_LEFT, 0, 0);
 }
 
 /*=====================
