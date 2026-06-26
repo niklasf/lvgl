@@ -39,8 +39,7 @@
  *  STATIC PROTOTYPES
  **********************/
 static void lv_spinner_constructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
-static void arc_anim_start_angle(void * obj, int32_t v);
-static void arc_anim_end_angle(void * obj, int32_t v);
+static void arc_anim_angles(void * obj, int32_t v);
 
 /**********************
  *  STATIC VARIABLES
@@ -95,20 +94,19 @@ void lv_spinner_set_anim_params(lv_obj_t * obj, uint32_t t, uint32_t angle)
     /*Delete the current animation*/
     lv_anim_delete(obj, NULL);
 
+    /*A single animation drives both the start and the end angle.
+     *The two angles used to live in two separate (but phase-locked)
+     *animations; folding them into one halves the per-frame animation
+     *bookkeeping. The animated value `v` is the linear progress in degrees;
+     *the end angle uses it directly while the start angle re-applies the
+     *original cubic-bezier easing inside the callback.*/
     lv_anim_t a;
     lv_anim_init(&a);
     lv_anim_set_var(&a, obj);
-    lv_anim_set_exec_cb(&a, arc_anim_end_angle);
+    lv_anim_set_exec_cb(&a, arc_anim_angles);
     lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
     lv_anim_set_duration(&a, t);
-    lv_anim_set_values(&a, angle, 360 + angle);
-    lv_anim_start(&a);
-
-    lv_anim_set_path_cb(&a, lv_anim_path_custom_bezier3);
-    lv_anim_set_bezier3_param(&a, LV_BEZIER_VAL_FLOAT(0.42), LV_BEZIER_VAL_FLOAT(0.58),
-                              LV_BEZIER_VAL_FLOAT(0), LV_BEZIER_VAL_FLOAT(1));
     lv_anim_set_values(&a, 0, 360);
-    lv_anim_set_exec_cb(&a, arc_anim_start_angle);
     lv_anim_start(&a);
 
     lv_arc_set_bg_angles(obj, 0, 360);
@@ -160,14 +158,23 @@ static void lv_spinner_constructor(const lv_obj_class_t * class_p, lv_obj_t * ob
     lv_spinner_set_anim_params(obj, DEF_TIME, DEF_ARC_ANGLE);
 }
 
-static void arc_anim_start_angle(void * obj, int32_t v)
+static void arc_anim_angles(void * var, int32_t v)
 {
-    lv_arc_set_start_angle(obj, (uint32_t) v);
-}
+    lv_obj_t * obj = var;
+    lv_spinner_t * spinner = (lv_spinner_t *)obj;
 
-static void arc_anim_end_angle(void * obj, int32_t v)
-{
-    lv_arc_set_end_angle(obj, (uint32_t) v);
+    /*End angle: linear sweep (was the linear end-angle animation)*/
+    lv_value_precise_t end = spinner->angle + v;
+
+    /*Start angle: same progress, eased by the original cubic-bezier path
+     *(0.42, 0.58, 0, 1) over the value range 0..360*/
+    uint32_t t = lv_map(v, 0, 360, 0, LV_BEZIER_VAL_MAX);
+    int32_t step = lv_cubic_bezier(t, LV_BEZIER_VAL_FLOAT(0.42f), LV_BEZIER_VAL_FLOAT(0.58f),
+                                   LV_BEZIER_VAL_FLOAT(0.0f), LV_BEZIER_VAL_FLOAT(1.0f));
+    lv_value_precise_t start = (lv_value_precise_t)((step * 360) >> LV_BEZIER_VAL_SHIFT);
+
+    /*Set both angles in a single call*/
+    lv_arc_set_angles(obj, start, end);
 }
 
 #endif /*LV_USE_SPINNER*/
