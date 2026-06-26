@@ -182,53 +182,40 @@ void lv_arc_set_angles(lv_obj_t * obj, lv_value_precise_t start, lv_value_precis
     if(start > 360) start -= 360;
     if(end > 360) end -= 360;
 
-    /*Snapshot everything needed to compute the invalidation areas before mutating*/
+    /*Snapshot for invalidation*/
     lv_value_precise_t old_start = arc->indic_angle_start;
     lv_value_precise_t old_end = arc->indic_angle_end;
     lv_area_t old_knob_area;
     get_knob_inv_area(obj, &old_knob_area);
 
-    /*Apply the functional change*/
+    /*Apply the change*/
     arc->indic_angle_end = end;
     arc->indic_angle_start = start;
 
-    /*Invalidation is only a rendering optimization; skip it all when not visible*/
-    if (!lv_obj_is_visible(obj))
-        return;
+    /*Invalidation*/
+    if (lv_obj_is_visible(obj)) {
+        /*Area swept by the start angle*/
+        lv_value_precise_t start_old_delta = end - old_start;
+        lv_value_precise_t start_new_delta = end - start;
+        if (start_old_delta < 0) start_old_delta = 360 + start_old_delta;
+        if (start_new_delta < 0) start_new_delta = 360 + start_new_delta;
+        if (LV_ABS(start_new_delta - start_old_delta) > 180) lv_obj_invalidate(obj);
+        else if (start_new_delta < start_old_delta) inv_arc_area(obj, old_start, start, LV_PART_INDICATOR);
+        else if (start_old_delta < start_new_delta) inv_arc_area(obj, start, old_start, LV_PART_INDICATOR);
 
-    /*Old knob position*/
-    lv_obj_invalidate_area(obj, &old_knob_area);
+        /*Area swept by the end angle*/
+        lv_value_precise_t end_old_delta = old_end - old_start;
+        lv_value_precise_t end_new_delta = end - old_start;
+        if (end_old_delta < 0) end_old_delta = 360 + end_old_delta;
+        if (end_new_delta < 0) end_new_delta = 360 + end_new_delta;
+        if (LV_ABS(end_new_delta - end_old_delta) > 180) lv_obj_invalidate(obj);
+        else if (end_new_delta < end_old_delta) inv_arc_area(obj, end, old_end, LV_PART_INDICATOR);
+        else if (end_old_delta < end_new_delta) inv_arc_area(obj, old_end, end, LV_PART_INDICATOR);
 
-    /*Area swept by the end angle (relative to the old start angle)*/
-    lv_value_precise_t end_old_delta = old_end - old_start;
-    lv_value_precise_t end_new_delta = end - old_start;
-    if (end_old_delta < 0)
-        end_old_delta = 360 + end_old_delta;
-    if (end_new_delta < 0)
-        end_new_delta = 360 + end_new_delta;
-    if (LV_ABS(end_new_delta - end_old_delta) > 180)
-        lv_obj_invalidate(obj);
-    else if (end_new_delta < end_old_delta)
-        inv_arc_area(obj, end, old_end, LV_PART_INDICATOR);
-    else if (end_old_delta < end_new_delta)
-        inv_arc_area(obj, old_end, end, LV_PART_INDICATOR);
-
-    /*Area swept by the start angle (relative to the new end angle)*/
-    lv_value_precise_t start_old_delta = end - old_start;
-    lv_value_precise_t start_new_delta = end - start;
-    if (start_old_delta < 0)
-        start_old_delta = 360 + start_old_delta;
-    if (start_new_delta < 0)
-        start_new_delta = 360 + start_new_delta;
-    if (LV_ABS(start_new_delta - start_old_delta) > 180)
-        lv_obj_invalidate(obj);
-    else if (start_new_delta < start_old_delta)
-        inv_arc_area(obj, old_start, start, LV_PART_INDICATOR);
-    else if (start_old_delta < start_new_delta)
-        inv_arc_area(obj, start, old_start, LV_PART_INDICATOR);
-
-    /*New knob position*/
-    inv_knob_area(obj);
+        /*Knob*/
+        lv_obj_invalidate_area(obj, &old_knob_area);
+        inv_knob_area(obj);
+    }
 }
 
 void lv_arc_set_bg_start_angle(lv_obj_t * obj, lv_value_precise_t start)
