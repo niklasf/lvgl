@@ -181,11 +181,12 @@ void lv_arc_set_angles(lv_obj_t * obj, lv_value_precise_t start, lv_value_precis
     if(start > 360) start -= 360;
     if(end > 360) end -= 360;
 
-    /*Invalidate the old knob position once (instead of once per angle)*/
-    inv_knob_area(obj);
+    bool visible = lv_obj_is_visible(obj);
 
     /*Update the end angle and invalidate only the swept area*/
+    if (visible)
     {
+        inv_knob_area(obj); /* Invalidate old knob position */
         lv_value_precise_t old_delta = arc->indic_angle_end - arc->indic_angle_start;
         lv_value_precise_t new_delta = end - arc->indic_angle_start;
 
@@ -195,11 +196,11 @@ void lv_arc_set_angles(lv_obj_t * obj, lv_value_precise_t start, lv_value_precis
         if(LV_ABS(new_delta - old_delta) > 180)  lv_obj_invalidate(obj);
         else if(new_delta < old_delta) inv_arc_area(obj, end, arc->indic_angle_end, LV_PART_INDICATOR);
         else if(old_delta < new_delta) inv_arc_area(obj, arc->indic_angle_end, end, LV_PART_INDICATOR);
-
-        arc->indic_angle_end = end;
     }
+    arc->indic_angle_end = end;
 
     /*Update the start angle (now relative to the new end) and invalidate its swept area*/
+    if (visible)
     {
         lv_value_precise_t old_delta = arc->indic_angle_end - arc->indic_angle_start;
         lv_value_precise_t new_delta = arc->indic_angle_end - start;
@@ -212,10 +213,9 @@ void lv_arc_set_angles(lv_obj_t * obj, lv_value_precise_t start, lv_value_precis
         else if(old_delta < new_delta) inv_arc_area(obj, start, arc->indic_angle_start, LV_PART_INDICATOR);
 
         arc->indic_angle_start = start;
-    }
 
-    /*Invalidate the new knob position once*/
-    inv_knob_area(obj);
+        inv_knob_area(obj); /*Invaliate new knob position*/
+    }
 }
 
 void lv_arc_set_bg_start_angle(lv_obj_t * obj, lv_value_precise_t start)
@@ -872,10 +872,6 @@ static void lv_arc_draw(lv_event_t * e)
 static void inv_arc_area(lv_obj_t * obj, lv_value_precise_t start_angle, lv_value_precise_t end_angle, lv_part_t part)
 {
     LV_CHECK_OBJ(obj, MY_CLASS, return);
-
-    /*Skip this complicated invalidation if the arc is not visible*/
-    if(lv_obj_is_visible(obj) == false) return;
-
     lv_arc_t * arc = (lv_arc_t *)obj;
 
     if(start_angle == end_angle) return;
