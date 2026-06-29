@@ -88,6 +88,18 @@ void lv_draw_sw_arc(lv_draw_task_t * t, const lv_draw_arc_dsc_t * dsc, const lv_
     while(start_angle >= 360) start_angle -= 360;
     while(end_angle >= 360) end_angle -= 360;
 
+#ifndef ARC_TIGHT_CLIP
+#define ARC_TIGHT_CLIP 1
+#endif
+#if ARC_TIGHT_CLIP
+    /*Shrink the processed area to the arc's tight bounding box so the scanline loop
+     *doesn't run the masks over empty rows/columns of the bounding box.*/
+    lv_area_t arc_bbox;
+    lv_draw_arc_get_area(dsc->center.x, dsc->center.y, dsc->radius, start_angle, end_angle,
+                         width, dsc->rounded, &arc_bbox);
+    if(!lv_area_intersect(&clipped_area, &clipped_area, &arc_bbox)) return;
+#endif
+
     void * mask_list[4] = {0};
     /*Create an angle mask*/
     lv_draw_sw_mask_angle_param_t mask_angle_param;
