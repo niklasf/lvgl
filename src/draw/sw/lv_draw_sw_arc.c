@@ -21,12 +21,19 @@
 static void add_circle(const lv_opa_t * circle_mask, const lv_area_t * blend_area, const lv_area_t * circle_area,
                        lv_opa_t * mask_buf,  int32_t width);
 static void get_rounded_area(int16_t angle, int32_t radius, uint8_t thickness, lv_area_t * res_area);
+static uint32_t get_arc_quadrant_areas(int32_t cx, int32_t cy, int32_t radius, int32_t width,
+                                       int32_t start_angle, int32_t end_angle,
+                                       const lv_area_t * clip, lv_area_t * out);
 
 /*********************
  *      DEFINES
  *********************/
 #define SPLIT_RADIUS_LIMIT 10  /*With radius greater than this the arc will drawn in quarters. A quarter is drawn only if there is arc in it*/
 #define SPLIT_ANGLE_GAP_LIMIT 60  /*With small gaps in the arc don't bother with splitting because there is nothing to skip.*/
+
+#ifndef ARC_QUARTER_SPLIT
+#define ARC_QUARTER_SPLIT 1
+#endif
 
 /**********************
  *      TYPEDEFS
@@ -120,10 +127,10 @@ void lv_draw_sw_arc(lv_draw_task_t * t, const lv_draw_arc_dsc_t * dsc, const lv_
         mask_in_param_valid = true;
     }
 
-    int32_t blend_h = lv_area_get_height(&clipped_area);
-    int32_t blend_w = lv_area_get_width(&clipped_area);
+    int32_t blend_h;
+    int32_t blend_w;
     int32_t h;
-    lv_opa_t * mask_buf = lv_malloc(blend_w);
+    lv_opa_t * mask_buf = lv_malloc(lv_area_get_width(&clipped_area));
 
     lv_area_t blend_area = clipped_area;
     lv_area_t img_area;
@@ -192,8 +199,33 @@ void lv_draw_sw_arc(lv_draw_task_t * t, const lv_draw_arc_dsc_t * dsc, const lv_
 
     }
 
-    blend_area.y2 = blend_area.y1;
-    for(h = 0; h < blend_h; h++) {
+    /*Determine the sub-areas to rasterize. Normally the whole clipped area, but for arcs
+     *with a large empty angular gap, split into quadrants and skip the empty ones.*/
+    lv_area_t draw_areas[8];
+    uint32_t draw_area_cnt = 0;
+#if ARC_QUARTER_SPLIT
+    {
+        int32_t angle_gap = (end_angle > start_angle) ? (360 - (end_angle - start_angle))
+                            : (start_angle - end_angle);
+        if(dsc->img_src == NULL && !dsc->rounded
+           && angle_gap > SPLIT_ANGLE_GAP_LIMIT && dsc->radius > SPLIT_RADIUS_LIMIT) {
+            draw_area_cnt = get_arc_quadrant_areas(dsc->center.x, dsc->center.y, dsc->radius, width,
+                                                   start_angle, end_angle, &clipped_area, draw_areas);
+        }
+    }
+#endif
+    if(draw_area_cnt == 0) {
+        draw_areas[0] = clipped_area;
+        draw_area_cnt = 1;
+    }
+
+    for(uint32_t ai = 0; ai < draw_area_cnt; ai++) {
+        blend_area = draw_areas[ai];
+        blend_w = lv_area_get_width(&blend_area);
+        blend_h = lv_area_get_height(&blend_area);
+
+        blend_area.y2 = blend_area.y1;
+        for(h = 0; h < blend_h; h++) {
         lv_memset(mask_buf, 0xff, blend_w);
         blend_dsc.mask_res = lv_draw_sw_mask_apply(mask_list, mask_buf, blend_area.x1, blend_area.y1, blend_w);
 
@@ -233,6 +265,7 @@ void lv_draw_sw_arc(lv_draw_task_t * t, const lv_draw_arc_dsc_t * dsc, const lv_
 
         blend_area.y1 ++;
         blend_area.y2 ++;
+        }
     }
 
     lv_draw_sw_mask_free_param(&mask_angle_param);
@@ -312,6 +345,146 @@ static void get_rounded_area(int16_t angle, int32_t radius, uint8_t thickness, l
         res_area->y1 = cir_y - thick_half;
         res_area->y2 = cir_y + thick_half - thick_corr;
     }
+}
+
+/*Compute the tight bounding boxes of the arc within each quadrant it occupies, clipped to
+ *`clip`. Quadrant boxes tile the bounding square into disjoint corners, so the union covers
+ *the arc with every pixel in exactly one box (no overlap -> no double blend). Empty quadrants
+ *contribute nothing. Ported from the historical draw_quarter_0..3.*/
+static uint32_t get_arc_quadrant_areas(int32_t cx, int32_t cy, int32_t radius, int32_t width,
+                                       int32_t start_angle, int32_t end_angle,
+                                       const lv_area_t * clip, lv_area_t * out)
+{
+    uint32_t cnt = 0;
+    int32_t sq = (start_angle / 90) & 0x3;
+    int32_t eq = (end_angle / 90) & 0x3;
+    lv_area_t a;
+
+#define ARC_Q_APPEND() do { lv_area_t _t; if(lv_area_intersect(&_t, &a, clip)) out[cnt++] = _t; } while(0)
+
+    /*--- Quarter 0 (bottom-right) ---*/
+    if(sq == 0 && eq == 0 && start_angle < end_angle) {
+        a.y1 = cy + ((lv_trigo_sin(start_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+        a.x2 = cx + ((lv_trigo_sin(start_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+        a.y2 = cy + ((lv_trigo_sin(end_angle) * radius) >> LV_TRIGO_SHIFT);
+        a.x1 = cx + ((lv_trigo_sin(end_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+        ARC_Q_APPEND();
+    }
+    else if(sq == 0 || eq == 0) {
+        if(sq == 0) {
+            a.x1 = cx;
+            a.y2 = cy + radius;
+            a.y1 = cy + ((lv_trigo_sin(start_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+            a.x2 = cx + ((lv_trigo_sin(start_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+        if(eq == 0) {
+            a.x2 = cx + radius;
+            a.y1 = cy;
+            a.y2 = cy + ((lv_trigo_sin(end_angle) * radius) >> LV_TRIGO_SHIFT);
+            a.x1 = cx + ((lv_trigo_sin(end_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+    }
+    else if((sq == eq && sq != 0 && end_angle < start_angle) ||
+            (sq == 2 && eq == 1) || (sq == 3 && eq == 2) || (sq == 3 && eq == 1)) {
+        a.x1 = cx; a.y1 = cy; a.x2 = cx + radius; a.y2 = cy + radius;
+        ARC_Q_APPEND();
+    }
+
+    /*--- Quarter 1 (bottom-left) ---*/
+    if(sq == 1 && eq == 1 && start_angle < end_angle) {
+        a.y2 = cy + ((lv_trigo_sin(start_angle) * (radius)) >> LV_TRIGO_SHIFT);
+        a.x2 = cx + ((lv_trigo_sin(start_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+        a.y1 = cy + ((lv_trigo_sin(end_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+        a.x1 = cx + ((lv_trigo_sin(end_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+        ARC_Q_APPEND();
+    }
+    else if(sq == 1 || eq == 1) {
+        if(sq == 1) {
+            a.x1 = cx - radius;
+            a.y1 = cy;
+            a.y2 = cy + ((lv_trigo_sin(start_angle) * (radius)) >> LV_TRIGO_SHIFT);
+            a.x2 = cx + ((lv_trigo_sin(start_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+        if(eq == 1) {
+            a.x2 = cx - 1;
+            a.y2 = cy + radius;
+            a.y1 = cy + ((lv_trigo_sin(end_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+            a.x1 = cx + ((lv_trigo_sin(end_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+    }
+    else if((sq == eq && sq != 1 && end_angle < start_angle) ||
+            (sq == 0 && eq == 2) || (sq == 0 && eq == 3) || (sq == 3 && eq == 2)) {
+        a.x1 = cx - radius; a.y1 = cy; a.x2 = cx - 1; a.y2 = cy + radius;
+        ARC_Q_APPEND();
+    }
+
+    /*--- Quarter 2 (top-left) ---*/
+    if(sq == 2 && eq == 2 && start_angle < end_angle) {
+        a.x1 = cx + ((lv_trigo_sin(start_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+        a.y2 = cy + ((lv_trigo_sin(start_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+        a.y1 = cy + ((lv_trigo_sin(end_angle) * radius) >> LV_TRIGO_SHIFT);
+        a.x2 = cx + ((lv_trigo_sin(end_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+        ARC_Q_APPEND();
+    }
+    else if(sq == 2 || eq == 2) {
+        if(sq == 2) {
+            a.x2 = cx - 1;
+            a.y1 = cy - radius;
+            a.x1 = cx + ((lv_trigo_sin(start_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+            a.y2 = cy + ((lv_trigo_sin(start_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+        if(eq == 2) {
+            a.x1 = cx - radius;
+            a.y2 = cy - 1;
+            a.x2 = cx + ((lv_trigo_sin(end_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+            a.y1 = cy + ((lv_trigo_sin(end_angle) * (radius)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+    }
+    else if((sq == eq && sq != 2 && end_angle < start_angle) ||
+            (sq == 0 && eq == 3) || (sq == 1 && eq == 3) || (sq == 1 && eq == 0)) {
+        a.x1 = cx - radius; a.y1 = cy - radius; a.x2 = cx - 1; a.y2 = cy - 1;
+        ARC_Q_APPEND();
+    }
+
+    /*--- Quarter 3 (top-right) ---*/
+    if(sq == 3 && eq == 3 && start_angle < end_angle) {
+        a.x1 = cx + ((lv_trigo_sin(start_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+        a.y1 = cy + ((lv_trigo_sin(start_angle) * (radius)) >> LV_TRIGO_SHIFT);
+        a.x2 = cx + ((lv_trigo_sin(end_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+        a.y2 = cy + ((lv_trigo_sin(end_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+        ARC_Q_APPEND();
+    }
+    else if(sq == 3 || eq == 3) {
+        if(sq == 3) {
+            a.x2 = cx + radius;
+            a.y2 = cy - 1;
+            a.x1 = cx + ((lv_trigo_sin(start_angle + 90) * (radius - width)) >> LV_TRIGO_SHIFT);
+            a.y1 = cy + ((lv_trigo_sin(start_angle) * (radius)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+        if(eq == 3) {
+            a.x1 = cx;
+            a.y1 = cy - radius;
+            a.x2 = cx + ((lv_trigo_sin(end_angle + 90) * (radius)) >> LV_TRIGO_SHIFT);
+            a.y2 = cy + ((lv_trigo_sin(end_angle) * (radius - width)) >> LV_TRIGO_SHIFT);
+            ARC_Q_APPEND();
+        }
+    }
+    else if((sq == eq && sq != 3 && end_angle < start_angle) ||
+            (sq == 2 && eq == 0) || (sq == 1 && eq == 0) || (sq == 2 && eq == 1)) {
+        a.x1 = cx; a.y1 = cy - radius; a.x2 = cx + radius; a.y2 = cy - 1;
+        ARC_Q_APPEND();
+    }
+
+#undef ARC_Q_APPEND
+
+    return cnt;
 }
 
 #else /*LV_DRAW_SW_COMPLEX*/
