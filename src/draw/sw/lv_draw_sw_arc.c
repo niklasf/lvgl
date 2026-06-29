@@ -21,18 +21,25 @@
 static void add_circle(const lv_opa_t * circle_mask, const lv_area_t * blend_area, const lv_area_t * circle_area,
                        lv_opa_t * mask_buf,  int32_t width);
 static void get_rounded_area(int16_t angle, int32_t radius, uint8_t thickness, lv_area_t * res_area);
-static uint32_t get_arc_quadrant_areas(int32_t cx, int32_t cy, int32_t radius, int32_t width,
-                                       int32_t start_angle, int32_t end_angle,
-                                       const lv_area_t * clip, lv_area_t * out);
 
 /*********************
  *      DEFINES
  *********************/
+
+/*Quarter-split optimization: draw the arc per quadrant and skip empty ones. Currently disabled
+ *- the simpler tight-clip below covers all arcs (including rounded, which the quarter-split
+ *can't do without a transparency artifact at the caps). Kept behind this flag for reference.*/
+#ifndef ARC_QUARTER_SPLIT
+#define ARC_QUARTER_SPLIT 0
+#endif
+
+#if ARC_QUARTER_SPLIT
 #define SPLIT_RADIUS_LIMIT 10  /*With radius greater than this the arc will drawn in quarters. A quarter is drawn only if there is arc in it*/
 #define SPLIT_ANGLE_GAP_LIMIT 60  /*With small gaps in the arc don't bother with splitting because there is nothing to skip.*/
 
-#ifndef ARC_QUARTER_SPLIT
-#define ARC_QUARTER_SPLIT 1
+static uint32_t get_arc_quadrant_areas(int32_t cx, int32_t cy, int32_t radius, int32_t width,
+                                       int32_t start_angle, int32_t end_angle,
+                                       const lv_area_t * clip, lv_area_t * out);
 #endif
 
 /**********************
@@ -347,6 +354,7 @@ static void get_rounded_area(int16_t angle, int32_t radius, uint8_t thickness, l
     }
 }
 
+#if ARC_QUARTER_SPLIT
 /*Compute the tight bounding boxes of the arc within each quadrant it occupies, clipped to
  *`clip`. Quadrant boxes tile the bounding square into disjoint corners, so the union covers
  *the arc with every pixel in exactly one box (no overlap -> no double blend). Empty quadrants
@@ -486,6 +494,7 @@ static uint32_t get_arc_quadrant_areas(int32_t cx, int32_t cy, int32_t radius, i
 
     return cnt;
 }
+#endif /*ARC_QUARTER_SPLIT*/
 
 #else /*LV_DRAW_SW_COMPLEX*/
 
