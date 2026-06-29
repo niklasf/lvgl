@@ -183,17 +183,22 @@ void lv_arc_set_angles(lv_obj_t * obj, lv_value_precise_t start, lv_value_precis
     if(end > 360) end -= 360;
 
     /*Snapshot for invalidation*/
-    lv_value_precise_t old_start = arc->indic_angle_start;
-    lv_value_precise_t old_end = arc->indic_angle_end;
+    lv_value_precise_t old_start;
+    lv_value_precise_t old_end;
     lv_area_t old_knob_area;
-    get_knob_inv_area(obj, &old_knob_area);
+    bool visible = lv_obj_is_visible(obj);
+    if(visible) {
+        old_start = arc->indic_angle_start;
+        old_end = arc->indic_angle_end;
+        get_knob_inv_area(obj, &old_knob_area);
+    }
 
     /*Apply the change*/
     arc->indic_angle_start = start;
     arc->indic_angle_end = end;
 
     /*Invalidation*/
-    if(lv_obj_is_visible(obj)) {
+    if(visible) {
         /*Area swept by the start angle*/
         lv_value_precise_t start_old_delta = end - old_start;
         lv_value_precise_t start_new_delta = end - start;
